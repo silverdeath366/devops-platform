@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  auth:
+    build: ./services/auth
+    ports:
+      - "8001:8000"
+    environment:
+      - SERVICE_NAME=auth
+
+  user:
+    build: ./services/user
+    ports:
+      - "8002:8000"
+    environment:
+      - SERVICE_NAME=user
+
+  task:
+    build: ./services/task
+    ports:
+      - "8003:8000"
+    environment:
+      - SERVICE_NAME=task
+
+  notification:
+    build: ./services/notification
+    ports:
+      - "8004:8000"
+    environment:
+      - SERVICE_NAME=notification
