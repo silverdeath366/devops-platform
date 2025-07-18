@@ -4,27 +4,61 @@ services:
   auth:
     build: ./services/auth
     ports:
-      - "8001:8000"
+      - "${AUTH_PORT}:8000"
     environment:
       - SERVICE_NAME=auth
+    env_file:
+      - .env
+    depends_on:
+      - user
+    networks:
+      - internal
+    # volumes:
+    #   - ./services/auth:/app
 
   user:
     build: ./services/user
     ports:
-      - "8002:8000"
+      - "${USER_PORT}:8000"
     environment:
       - SERVICE_NAME=user
+    env_file:
+      - .env
+    networks:
+      - internal
+    # volumes:
+    #   - ./services/user:/app
 
   task:
     build: ./services/task
     ports:
-      - "8003:8000"
+      - "${TASK_PORT}:8000"
     environment:
       - SERVICE_NAME=task
+    env_file:
+      - .env
+    depends_on:
+      - user
+    networks:
+      - internal
+    # volumes:
+    #   - ./services/task:/app
 
   notification:
     build: ./services/notification
     ports:
-      - "8004:8000"
+      - "${NOTIFICATION_PORT}:8000"
     environment:
       - SERVICE_NAME=notification
+    env_file:
+      - .env
+    depends_on:
+      - task
+    networks:
+      - internal
+    # volumes:
+    #   - ./services/notification:/app
+
+networks:
+  internal:
+    driver: bridge
