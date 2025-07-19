@@ -1,18 +1,18 @@
-name: CI/CD - Task Service
+name: CI/CD - User Service
 
 on:
   push:
     paths:
-      - 'services/task/**'
-      - '.github/workflows/task-ci.yml'
+      - 'services/user/**'
+      - '.github/workflows/user-ci.yml'
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     env:
-      IMAGE_NAME: silverdeath366/task
-      HELM_CHART_PATH: helm/charts/task
-      VALUES_FILE: helm/charts/task/values.yaml
+      IMAGE_NAME: silverdeath366/user
+      HELM_CHART_PATH: helm/charts/user
+      VALUES_FILE: helm/charts/user/values.yaml
 
     steps:
     - name: Checkout code
@@ -30,12 +30,12 @@ jobs:
     - name: Install test dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r services/task/requirements.txt
+        pip install -r services/user/requirements.txt
         pip install pytest
 
     - name: Run Tests
       run: |
-        pytest services/task/tests
+        pytest services/user/tests
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
@@ -48,7 +48,7 @@ jobs:
 
     - name: Build & Push Docker image
       run: |
-        docker build -t $IMAGE_NAME:${{ steps.vars.outputs.sha_short }} ./services/task
+        docker build -t $IMAGE_NAME:${{ steps.vars.outputs.sha_short }} ./services/user
         docker push $IMAGE_NAME:${{ steps.vars.outputs.sha_short }}
 
     - name: Update Helm values.yaml with SHA tag
