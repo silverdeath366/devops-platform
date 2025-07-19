@@ -1,0 +1,11 @@
+from sqlalchemy import Column, Integer, String, MetaData, Table
+
+metadata = MetaData()
+
+users = Table(
+    "users",
+    metadata,
+    Column("id", Integer, primary_key=True),
+    Column("username", String, unique=True, nullable=False),
+    Column("password", String, nullable=False),
+)

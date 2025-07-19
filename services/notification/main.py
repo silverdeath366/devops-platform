@@ -1,19 +1,18 @@
-from fastapi import FastAPI
-import logging
-import os
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+app = FastAPI()
 
-SERVICE_NAME = os.getenv("SERVICE_NAME", "notification")
-
-app = FastAPI(title=f"{SERVICE_NAME} Service")
-
-@app.get("/")
-def root():
-    logger.info("Root endpoint called")
-    return {"message": f"Hello from {SERVICE_NAME}!"}
+class Notification(BaseModel):
+    user_id: int
+    message: str
 
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+@app.post("/notify")
+def send_notification(notification: Notification):
+    # Simulate sending (could be webhook, email, SMS, etc.)
+    print(f"📣 Notifying user {notification.user_id}: {notification.message}")
+    return {"status": "sent", "user_id": notification.user_id}
