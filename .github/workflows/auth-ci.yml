@@ -61,7 +61,8 @@ jobs:
       run: |
         git config user.name "ci-bot"
         git config user.email "ci-bot@example.com"
+        git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}
         git add $VALUES_FILE
         git commit -m "CI: Update auth Helm tag to ${{ steps.vars.outputs.sha_short }}" || echo "Nothing to commit"
-        git push https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }} HEAD:main
+        git push origin HEAD:main
 
