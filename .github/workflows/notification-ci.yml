@@ -31,10 +31,11 @@ jobs:
     - name: Set up virtual environment and install pinned versions
       run: |
         python -m venv venv
-        source venv/bin/activate
-        pip install --upgrade pip
-        pip install -r services/notification/requirements.txt
-        pip install pytest
+        ./venv/bin/pip install --upgrade pip
+        ./venv/bin/pip install -r services/notification/requirements.txt
+        ./venv/bin/pip install pytest
+
+
 
 
     - name: Set PYTHONPATH
@@ -42,8 +43,8 @@ jobs:
 
     - name: Run Tests
       run: |
-        source venv/bin/activate
-        pytest services/notification/tests
+        ./venv/bin/python -m pytest services/notification/tests
+
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
