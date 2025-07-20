@@ -3,4 +3,4 @@ httpx
 pytest
 databases
 aiosqlite
-
+httpx>=0.23.0

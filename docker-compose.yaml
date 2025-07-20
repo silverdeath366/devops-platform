@@ -26,8 +26,8 @@ services:
       - .env
     networks:
       - internal
-    # volumes:
-    #   - ./services/user:/app
+    volumes:
+      - ./services/user:/app
 
   task:
     build: ./services/task

@@ -1,7 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from databases import Database
-from models import tasks, metadata
+from services.task.models import tasks, metadata
+from contextlib import asynccontextmanager
 import sqlalchemy
 
 DATABASE_URL = "sqlite:///./task.db"
@@ -9,20 +10,18 @@ database = Database(DATABASE_URL)
 engine = sqlalchemy.create_engine(DATABASE_URL)
 metadata.create_all(engine)
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await database.connect()
+    yield
+    await database.disconnect()
+
+app = FastAPI(lifespan=lifespan)
 
 class TaskIn(BaseModel):
     title: str
     description: str = ""
     user_id: int
-
-@app.on_event("startup")
-async def startup():
-    await database.connect()
-
-@app.on_event("shutdown")
-async def shutdown():
-    await database.disconnect()
 
 @app.get("/health")
 async def health():

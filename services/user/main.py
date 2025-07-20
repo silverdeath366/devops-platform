@@ -1,27 +1,40 @@
+import os
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from databases import Database
-from models import users, metadata
+from services.user.models import users, metadata
+from contextlib import asynccontextmanager
+import sqlalchemy
+import os
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from databases import Database
+from services.user.models import users, metadata
+from contextlib import asynccontextmanager
 import sqlalchemy
 
-DATABASE_URL = "sqlite:///./user.db"
-database = Database(DATABASE_URL)
-engine = sqlalchemy.create_engine(DATABASE_URL)
-metadata.create_all(engine)
+TESTING = os.getenv("TESTING") == "1"
+DATABASE_URL = "sqlite:///./test_user.db" if TESTING else "sqlite:///./user.db"
 
-app = FastAPI()
+database = Database(DATABASE_URL)
+engine = sqlalchemy.create_engine(
+    DATABASE_URL, connect_args={"check_same_thread": False}
+)
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    metadata.create_all(engine)
+    await database.connect()
+    yield
+    await database.disconnect()
+
+app = FastAPI(lifespan=lifespan)
 
 class UserIn(BaseModel):
     name: str
+    username: str
     email: str
-
-@app.on_event("startup")
-async def startup():
-    await database.connect()
-
-@app.on_event("shutdown")
-async def shutdown():
-    await database.disconnect()
+    password: str
 
 @app.get("/health")
 async def health():
@@ -34,12 +47,19 @@ async def get_users():
 
 @app.post("/users")
 async def create_user(user: UserIn):
-    query = users.insert().values(name=user.name, email=user.email)
+    query = users.insert().values(
+        name=user.name,
+        username=user.username,
+        email=user.email,
+        password=user.password,
+    )
     try:
         user_id = await database.execute(query)
         return {**user.dict(), "id": user_id}
-    except Exception:
-        raise HTTPException(status_code=400, detail="Email already exists")
+    except Exception as e:
+        import traceback
+        traceback.print_exc()  # 🔍 Print real error during test
+        raise HTTPException(status_code=400, detail=f"User creation failed: {e}")
 
 @app.get("/users/{user_id}")
 async def get_user(user_id: int):
