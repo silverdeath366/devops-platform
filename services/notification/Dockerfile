@@ -5,7 +5,8 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .  # ✅ this now refers to ./services/notification contents
+# Copy source code into the container
+COPY . .
 
 EXPOSE 8000
 
