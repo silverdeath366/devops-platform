@@ -2,14 +2,10 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
-# Copy all service files first
-COPY ./services/notification /app
-
-# Install deps
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Set PYTHONPATH to allow absolute imports (for tests and app)
-ENV PYTHONPATH=/app
+COPY . .  # ✅ this now refers to ./services/notification contents
 
 EXPOSE 8000
 
