@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: silverdeath366/notification
-  tag: latest
+  tag: v2
   pullPolicy: IfNotPresent
 
 service:
