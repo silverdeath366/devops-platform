@@ -53,6 +53,7 @@ jobs:
     - name: Build Docker image
       run: |
         docker build -t $IMAGE_NAME:${{ steps.vars.outputs.sha_short }} -f services/notification/Dockerfile services/notification
+        docker tag $IMAGE_NAME:${{ steps.vars.outputs.sha_short }} $IMAGE_NAME:latest
 
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
@@ -63,11 +64,11 @@ jobs:
         ignore-unfixed: true
         severity: 'CRITICAL,HIGH'
 
-    - name: Push Docker image
+    - name: Push Docker images
       run: |
         docker push $IMAGE_NAME:${{ steps.vars.outputs.sha_short }}
+        docker push $IMAGE_NAME:latest
 
     - name: Update Helm values.yaml with SHA tag
       run: |
         sed -i 's|tag:.*|tag: "${{ steps.vars.outputs.sha_short }}"|' $VALUES_FILE
-

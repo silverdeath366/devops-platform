@@ -11,8 +11,8 @@ spec:
     metadata:
       labels:
         app: {{ .Chart.Name }}
-        logging: "true"               # Loki log discovery
-        service: "{{ .Chart.Name }}"  # Useful for Grafana filtering
+        logging: "true"               # For Loki logging
+        service: "{{ .Chart.Name }}"  # For Grafana dashboards
     spec:
       containers:
         - name: {{ .Chart.Name }}
@@ -21,6 +21,7 @@ spec:
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
+
           env:
             - name: JWT_SECRET
               valueFrom:
@@ -37,3 +38,23 @@ spec:
                 configMapKeyRef:
                   name: {{ .Chart.Name }}-config
                   key: PORT
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 1
+            failureThreshold: 3
+            successThreshold: 1
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 1
+            failureThreshold: 3
+            successThreshold: 1

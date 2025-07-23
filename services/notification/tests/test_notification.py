@@ -1,7 +1,7 @@
 from fastapi.testclient import TestClient
 from services.notification.main import app
 
-client = TestClient(app)
+client = TestClient(app, base_url="http://testserver")
 
 def test_notification_health():
     response = client.get("/health")

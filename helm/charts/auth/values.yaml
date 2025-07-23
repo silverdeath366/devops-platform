@@ -1,9 +1,9 @@
-replicaCount: 2
+replicaCount: 1
 
 image:
   repository: silverdeath366/auth
-  tag: latest
-  pullPolicy: IfNotPresent
+  tag: v1
+  pullPolicy: Always
 
 service:
   type: ClusterIP

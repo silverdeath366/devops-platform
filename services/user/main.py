@@ -2,14 +2,7 @@ import os
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from databases import Database
-from services.user.models import users, metadata
-from contextlib import asynccontextmanager
-import sqlalchemy
-import os
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-from databases import Database
-from services.user.models import users, metadata
+from models import users, metadata
 from contextlib import asynccontextmanager
 import sqlalchemy
 
@@ -37,6 +30,7 @@ class UserIn(BaseModel):
     password: str
 
 @app.get("/health")
+@app.get("/healthz")
 async def health():
     return {"status": "ok"}
 
@@ -58,7 +52,7 @@ async def create_user(user: UserIn):
         return {**user.dict(), "id": user_id}
     except Exception as e:
         import traceback
-        traceback.print_exc()  # 🔍 Print real error during test
+        traceback.print_exc()
         raise HTTPException(status_code=400, detail=f"User creation failed: {e}")
 
 @app.get("/users/{user_id}")

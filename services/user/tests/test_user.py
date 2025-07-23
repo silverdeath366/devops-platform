@@ -5,7 +5,7 @@ from services.user.main import app, metadata, engine
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-client = TestClient(app)
+client = TestClient(app, base_url="http://testserver")
 
 # Reset the DB before each test run
 @pytest.fixture(autouse=True, scope="function")

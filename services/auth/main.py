@@ -1,31 +1,29 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from databases import Database
-from services.auth.models import users, metadata
+from models import users, metadata
 from contextlib import asynccontextmanager
 import sqlalchemy
 
-# Database setup
 DATABASE_URL = "sqlite:///./auth.db"
 database = Database(DATABASE_URL)
 engine = sqlalchemy.create_engine(DATABASE_URL)
-metadata.create_all(engine)
 
-# FastAPI lifespan management
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    metadata.create_all(engine)
     await database.connect()
     yield
     await database.disconnect()
 
 app = FastAPI(lifespan=lifespan)
 
-# Request model
 class User(BaseModel):
     username: str
     password: str
 
 @app.get("/health")
+@app.get("/healthz")
 async def health():
     return {"status": "ok"}
 

@@ -3,7 +3,7 @@ replicaCount: 1
 image:
   repository: silverdeath366/user
   tag: latest
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 
 service:
   type: ClusterIP

@@ -6,8 +6,8 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/silverdeath366/devops-platform.git
-    targetRevision: silverdeath366
+    repoURL: https://github.com/silverdeath366/devops-platform
+    targetRevision: main
     path: helm/charts/task
     helm:
       valueFiles:

@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from databases import Database
-from services.task.models import tasks, metadata
+from models import tasks, metadata
 from contextlib import asynccontextmanager
 import sqlalchemy
 
@@ -24,6 +24,7 @@ class TaskIn(BaseModel):
     user_id: int
 
 @app.get("/health")
+@app.get("/healthz")
 async def health():
     return {"status": "ok"}
 
