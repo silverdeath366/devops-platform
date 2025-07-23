@@ -4,7 +4,7 @@ image:
   repository: silverdeath366/task
 
   tag: latest
-  pullPolicy: IfNotPresent
+  pullPolicy: v1
 
 service:
   type: ClusterIP
