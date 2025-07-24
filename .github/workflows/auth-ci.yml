@@ -16,14 +16,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Cache pip dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('services/auth/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -48,7 +40,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build & Push Docker image (static tag: v1)
+      - name: Build & Push Docker image (tag: v1)
         run: |
           docker build -t $IMAGE_NAME:v1 ./services/auth
           docker push $IMAGE_NAME:v1
