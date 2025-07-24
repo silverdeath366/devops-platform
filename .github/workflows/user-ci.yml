@@ -29,6 +29,9 @@ jobs:
         pip install -r $SERVICE_PATH/requirements.txt
         pip install pytest httpx
 
+    - name: Set PYTHONPATH
+      run: echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
+
     - name: Run Tests
       run: |
         pytest $SERVICE_PATH/tests
