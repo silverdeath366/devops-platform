@@ -4,8 +4,11 @@ from databases import Database
 from models import tasks, metadata
 from contextlib import asynccontextmanager
 import sqlalchemy
+import os
 
-DATABASE_URL = "sqlite:///./task.db"
+TESTING = os.getenv("TESTING") == "1"
+DATABASE_URL = "sqlite:///./test_task.db" if TESTING else "sqlite:///./task.db"
+
 database = Database(DATABASE_URL)
 engine = sqlalchemy.create_engine(DATABASE_URL)
 metadata.create_all(engine)
