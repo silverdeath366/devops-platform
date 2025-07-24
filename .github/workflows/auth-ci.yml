@@ -11,16 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     env:
       IMAGE_NAME: silverdeath366/auth
-      HELM_CHART_PATH: helm/charts/auth
-      VALUES_FILE: helm/charts/auth/values.yaml
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-
-    - name: Extract short SHA
-      id: vars
-      run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
     - name: Cache pip dependencies
       uses: actions/cache@v3
@@ -54,24 +48,7 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Build & Push Docker image
+    - name: Build & Push Docker image (static tag: v1)
       run: |
-        docker build -t $IMAGE_NAME:${{ steps.vars.outputs.sha_short }} ./services/auth
-        docker push $IMAGE_NAME:${{ steps.vars.outputs.sha_short }}
-        docker tag $IMAGE_NAME:${{ steps.vars.outputs.sha_short }} $IMAGE_NAME:latest
-        docker push $IMAGE_NAME:latest
-
-    - name: Update Helm values.yaml with SHA tag
-      run: |
-        sed -i 's|tag:.*|tag: "${{ steps.vars.outputs.sha_short }}"|' $VALUES_FILE
-
-    - name: Commit and push updated Helm values
-      env:
-        GH_PAT: ${{ secrets.GH_PAT }}
-      run: |
-        git config user.name "ci-bot"
-        git config user.email "ci-bot@users.noreply.github.com"
-        git add $VALUES_FILE
-        git commit -m "ci: update auth image tag to ${{ steps.vars.outputs.sha_short }}" || echo "No changes to commit"
-        git remote set-url origin https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}
-        git push origin main
+        docker build -t $IMAGE_NAME:v1 ./services/auth
+        docker push $IMAGE_NAME:v1
