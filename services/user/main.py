@@ -2,7 +2,7 @@ import os
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from databases import Database
-from models import users, metadata
+from .models import users, metadata
 from contextlib import asynccontextmanager
 import sqlalchemy
 
