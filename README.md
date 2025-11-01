@@ -1,6 +1,6 @@
 #  DevOps Microservices Platform
 
-A fully containerized, GitOps-enabled microservices platform designed to showcase modern DevOps practices for interviews and production-ready prototypes.
+A modular microservices platform built with FastAPI, Docker, and Kubernetes — designed to demonstrate DevOps best practices like GitOps (Argo CD), CI/CD (GitHub Actions), and infrastructure as code.
 
 ---
 
