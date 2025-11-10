@@ -24,7 +24,7 @@ python-multipart==0.0.17
 httpx==0.27.2
 
 # Monitoring and observability
-prometheus-client==0.21.0
+prometheus-client==0.23.1
 
 # Utilities
 python-dotenv==1.0.1
