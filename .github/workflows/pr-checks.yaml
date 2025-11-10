@@ -1,0 +1,47 @@
+name: PR Checks
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  pr-validation:
+    name: Validate PR
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check PR title
+        run: |
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          if [[ ! "$PR_TITLE" =~ ^(feat|fix|docs|style|refactor|test|chore)(\(.+\))?: ]]; then
+            echo "❌ PR title must follow conventional commits format"
+            echo "Examples: 'feat: add new feature', 'fix(auth): resolve login bug'"
+            exit 1
+          fi
+
+      - name: Check for large files
+        run: |
+          large_files=$(find . -type f -size +5M -not -path "./.git/*" -not -path "./venv/*")
+          if [ -n "$large_files" ]; then
+            echo "❌ Large files detected (>5MB):"
+            echo "$large_files"
+            exit 1
+          fi
+
+      - name: PR size check
+        run: |
+          additions=$(git diff --numstat origin/${{ github.base_ref }}..HEAD | awk '{sum+=$1} END {print sum}')
+          deletions=$(git diff --numstat origin/${{ github.base_ref }}..HEAD | awk '{sum+=$2} END {print sum}')
+          total=$((additions + deletions))
+          
+          echo "📊 PR size: +$additions -$deletions (total: $total lines)"
+          
+          if [ $total -gt 1000 ]; then
+            echo "⚠️  Warning: Large PR detected. Consider breaking it into smaller PRs."
+          fi
+
