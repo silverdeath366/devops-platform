@@ -1,64 +1,162 @@
-version: '3.8'
+# ============================================
+# Production-Grade Docker Compose Configuration
+# ============================================
+# Supports multiple profiles: dev, test, prod
+# Usage:
+#   Development: docker-compose --profile dev up
+#   With Postgres: docker-compose --profile dev --profile postgres up
+#   Production: docker-compose --profile prod up
 
 services:
-  auth:
-    build: ./services/auth
+  # ============================================
+  # PostgreSQL Database (Production)
+  # ============================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: devops-postgres
+    profiles: ["postgres", "prod"]
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-devops_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-devops_password}
+      POSTGRES_MULTIPLE_DATABASES: auth_db,user_db,task_db
     ports:
-      - "${AUTH_PORT}:8000"
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-databases.sh:/docker-entrypoint-initdb.d/init-databases.sh
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-devops_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================
+  # Auth Service
+  # ============================================
+  auth:
+    build:
+      context: ./services/auth
+      dockerfile: Dockerfile
+    container_name: devops-auth
+    profiles: ["dev", "test", "prod"]
+    ports:
+      - "${AUTH_PORT:-8001}:8000"
     environment:
       - SERVICE_NAME=auth
-    env_file:
-      - .env
-    depends_on:
-      - user
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+      - DEBUG=${DEBUG:-false}
+      - DATABASE_URL=${AUTH_DATABASE_URL:-sqlite+aiosqlite:///./auth.db}
+      - JWT_SECRET=${JWT_SECRET:-change-this-secret}
+      - CORS_ORIGINS=${CORS_ORIGINS:-["*"]}
     networks:
-      - internal
-    # volumes:
-    #   - ./services/auth:/app
+      - backend
+    healthcheck:
+      test: ["CMD", "python", "-c", "import httpx; httpx.get('http://localhost:8000/health', timeout=5.0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
 
+  # ============================================
+  # User Service
+  # ============================================
   user:
-    build: ./services/user
+    build:
+      context: ./services/user
+      dockerfile: Dockerfile
+    container_name: devops-user
+    profiles: ["dev", "test", "prod"]
     ports:
-      - "${USER_PORT}:8000"
+      - "${USER_PORT:-8002}:8000"
     environment:
       - SERVICE_NAME=user
-    env_file:
-      - .env
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+      - DEBUG=${DEBUG:-false}
+      - DATABASE_URL=${USER_DATABASE_URL:-sqlite+aiosqlite:///./user.db}
+      - CORS_ORIGINS=${CORS_ORIGINS:-["*"]}
     networks:
-      - internal
-    volumes:
-      - ./services/user:/app
+      - backend
+    healthcheck:
+      test: ["CMD", "python", "-c", "import httpx; httpx.get('http://localhost:8000/health', timeout=5.0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
 
+  # ============================================
+  # Task Service
+  # ============================================
   task:
-    build: ./services/task
+    build:
+      context: ./services/task
+      dockerfile: Dockerfile
+    container_name: devops-task
+    profiles: ["dev", "test", "prod"]
     ports:
-      - "${TASK_PORT}:8000"
+      - "${TASK_PORT:-8003}:8000"
     environment:
       - SERVICE_NAME=task
-    env_file:
-      - .env
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+      - DEBUG=${DEBUG:-false}
+      - DATABASE_URL=${TASK_DATABASE_URL:-sqlite+aiosqlite:///./task.db}
+      - CORS_ORIGINS=${CORS_ORIGINS:-["*"]}
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "python", "-c", "import httpx; httpx.get('http://localhost:8000/health', timeout=5.0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
     depends_on:
       - user
-    networks:
-      - internal
-    # volumes:
-    #   - ./services/task:/app
 
+  # ============================================
+  # Notification Service
+  # ============================================
   notification:
-    build: ./services/notification
+    build:
+      context: ./services/notification
+      dockerfile: Dockerfile
+    container_name: devops-notification
+    profiles: ["dev", "test", "prod"]
     ports:
-      - "${NOTIFICATION_PORT}:8000"
+      - "${NOTIFICATION_PORT:-8004}:8000"
     environment:
       - SERVICE_NAME=notification
-    env_file:
-      - .env
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+      - DEBUG=${DEBUG:-false}
+      - CORS_ORIGINS=${CORS_ORIGINS:-["*"]}
+      - SMTP_HOST=${SMTP_HOST:-smtp.example.com}
+      - SMTP_PORT=${SMTP_PORT:-587}
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "python", "-c", "import httpx; httpx.get('http://localhost:8000/health', timeout=5.0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
     depends_on:
       - task
-    networks:
-      - internal
-    # volumes:
-    #   - ./services/notification:/app
 
+# ============================================
+# Networks
+# ============================================
 networks:
-  internal:
+  backend:
     driver: bridge
+    name: devops-network
+
+# ============================================
+# Volumes
+# ============================================
+volumes:
+  postgres_data:
+    name: devops-postgres-data
