@@ -1,5 +1,5 @@
 # FastAPI and web framework
-fastapi==0.115.0
+fastapi==0.121.1
 uvicorn[standard]==0.32.0
 gunicorn==23.0.0
 
