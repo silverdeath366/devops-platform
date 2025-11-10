@@ -1,0 +1,176 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - silverdeath366
+  pull_request:
+    branches:
+      - main
+      - develop
+
+env:
+  DOCKER_REGISTRY: silverdeath366
+  PYTHON_VERSION: "3.12"
+
+jobs:
+  # ============================================
+  # Code Quality & Testing
+  # ============================================
+  lint-and-test:
+    name: Lint & Test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [auth, user, task, notification]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          cd services/${{ matrix.service }}
+          pip install -r requirements.txt
+          pip install pytest pytest-asyncio pytest-cov ruff mypy black
+
+      - name: Run Black (code formatting)
+        run: |
+          cd services/${{ matrix.service }}
+          black --check app/ tests/ || true
+
+      - name: Run Ruff (linting)
+        run: |
+          cd services/${{ matrix.service }}
+          ruff check app/ tests/ || true
+
+      - name: Run MyPy (type checking)
+        run: |
+          cd services/${{ matrix.service }}
+          mypy app/ --ignore-missing-imports || true
+
+      - name: Run tests with coverage
+        run: |
+          cd services/${{ matrix.service }}
+          pytest tests/ -v --cov=app --cov-report=xml --cov-report=term
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./services/${{ matrix.service }}/coverage.xml
+          flags: ${{ matrix.service }}
+          name: ${{ matrix.service }}-coverage
+        continue-on-error: true
+
+  # ============================================
+  # Build & Security Scan
+  # ============================================
+  build-and-scan:
+    name: Build & Security Scan
+    runs-on: ubuntu-latest
+    needs: lint-and-test
+    if: github.event_name == 'push'
+    strategy:
+      matrix:
+        service: [auth, user, task, notification]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.DOCKER_REGISTRY }}/${{ matrix.service }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./services/${{ matrix.service }}
+          file: ./services/${{ matrix.service }}/Dockerfile
+          push: false
+          load: true
+          tags: ${{ steps.meta.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Run Trivy security scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.DOCKER_REGISTRY }}/${{ matrix.service }}:${{ github.sha }}
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+        continue-on-error: true
+
+      - name: Upload Trivy results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results.sarif'
+        continue-on-error: true
+
+      - name: Push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./services/${{ matrix.service }}
+          file: ./services/${{ matrix.service }}/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ============================================
+  # Deploy (GitOps - Argo CD Auto-sync)
+  # ============================================
+  deploy:
+    name: Trigger GitOps Sync
+    runs-on: ubuntu-latest
+    needs: build-and-scan
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/silverdeath366'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Update image tags in Helm values
+        run: |
+          for service in auth user task notification; do
+            sed -i "s/tag:.*/tag: ${{ github.sha }}/" helm/charts/${service}/values.yaml
+          done
+
+      - name: Commit and push updated Helm values
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add helm/charts/*/values.yaml
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update image tags to ${{ github.sha }}" && git push)
+
+      - name: Notify Deployment
+        run: |
+          echo "✅ Images built and pushed successfully"
+          echo "🚀 Argo CD will auto-sync from Git"
+          echo "📦 Services: auth, user, task, notification"
+          echo "🏷️  Tag: ${{ github.sha }}"
+
