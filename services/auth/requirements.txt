@@ -16,7 +16,7 @@ aiosqlite==0.20.0  # SQLite async for dev
 asyncpg==0.30.0    # PostgreSQL async for prod
 
 # Security
-pyjwt==2.9.0
+pyjwt==2.10.1
 passlib[bcrypt]==1.7.4
 python-multipart==0.0.17
 
