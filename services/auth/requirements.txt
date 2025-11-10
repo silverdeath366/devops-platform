@@ -9,7 +9,7 @@ pydantic-settings==2.6.0
 
 # Database - SQLAlchemy 2.0
 sqlalchemy[asyncio]==2.0.36
-alembic==1.14.0
+alembic==1.17.1
 
 # Database drivers
 aiosqlite==0.20.0  # SQLite async for dev
