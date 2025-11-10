@@ -3,7 +3,7 @@
 # ============================================
 # Stage 1: Builder
 # ============================================
-FROM python:3.12-slim as builder
+FROM python:3.14-slim as builder
 
 WORKDIR /app
 
@@ -20,7 +20,7 @@ RUN pip install --user --no-cache-dir --no-warn-script-location -r requirements.
 # ============================================
 # Stage 2: Runtime
 # ============================================
-FROM python:3.12-slim
+FROM python:3.14-slim
 
 # Create non-root user
 RUN groupadd -r appuser && useradd -r -g appuser appuser
