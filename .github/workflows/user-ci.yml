@@ -79,5 +79,13 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         cd $WORKDIR
-        git pull --rebase origin ${GITHUB_REF#refs/heads/}
-        git push origin HEAD:${GITHUB_REF#refs/heads/}
+        for attempt in 1 2 3; do
+          git pull --rebase origin ${GITHUB_REF#refs/heads/}
+          if git push origin HEAD:${GITHUB_REF#refs/heads/}; then
+            exit 0
+          fi
+          echo "Push attempt $attempt failed, retrying..."
+          sleep 5
+        done
+        echo "Push failed after multiple attempts" >&2
+        exit 1
