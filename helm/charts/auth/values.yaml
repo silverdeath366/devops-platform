@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: silverdeath366/auth
-  tag: "a008a00"
+  tag: "5465955"
   pullPolicy: Always
 
 service:
