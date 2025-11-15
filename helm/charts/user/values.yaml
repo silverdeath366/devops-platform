@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: silverdeath366/user
-  tag: v2
+  tag: "4b3028d"
   pullPolicy: Always
 
 service:
