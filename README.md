@@ -150,6 +150,7 @@ Each push to `main` or `silverdeath366` triggers:
   2. Builds a Docker image tagged with the short SHA.
   3. Pushes to Docker Hub (`silverdeath366/<svc>`).
   4. Updates the Helm values to reference the new SHA tag (keeps Git + Argo in sync).
+- Workflows trigger automatically on every push to `main`, or manually via **Run workflow** in the GitHub UI (ensure repo settings → Actions → “Allow GitHub Actions to run this repository” is enabled).
 - Required GitHub secrets:
   - `DOCKER_USERNAME`
   - `DOCKER_PASSWORD`
