@@ -1,0 +1,527 @@
+[0;32m╔════════════════════════════════════════════╗[0m
+[0;32m║   DevOps Platform - Comprehensive Test    ║[0m
+[0;32m║         (Non-Stopping Version)             ║[0m
+[0;32m╚════════════════════════════════════════════╝[0m
+
+Started: Sun Nov  9 21:36:55 IST 2025
+Log file: test-results-20251109-213655.log
+
+
+[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+[0;34m1. Checking Prerequisites[0m
+[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+  Testing Docker installation... [0;32m✅ PASS[0m
+    Version: Docker version 27.5.1, build 27.5.1-0ubuntu3~24.04.2
+  Testing Docker Compose installation... [0;32m✅ PASS[0m
+    Version: Docker Compose version v2.27.0
+  Testing Python installation... [0;32m✅ PASS[0m
+    Version: Python 3.12.3
+  Testing curl installation... [0;32m✅ PASS[0m
+
+[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+[0;34m2. Checking Project Structure[0m
+[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+  Testing Directory: services/auth/app... [0;32m✅ PASS[0m
+  Testing Directory: services/user/app... [0;32m✅ PASS[0m
+  Testing Directory: services/task/app... [0;32m✅ PASS[0m
+  Testing Directory: services/notification/app... [0;32m✅ PASS[0m
+  Testing Directory: services/auth/tests... [0;32m✅ PASS[0m
+  Testing Directory: services/user/tests... [0;32m✅ PASS[0m
+  Testing Directory: services/task/tests... [0;32m✅ PASS[0m
+  Testing Directory: services/notification/tests... [0;32m✅ PASS[0m
+  Testing Directory: helm/charts... [0;32m✅ PASS[0m
+  Testing Directory: scripts... [0;32m✅ PASS[0m
+  Testing File: docker-compose.yaml... [0;32m✅ PASS[0m
+  Testing File: Makefile... [0;32m✅ PASS[0m
+  Testing File: README.md... [0;32m✅ PASS[0m
+  Testing File: requirements-dev.txt... [0;32m✅ PASS[0m
+  Testing File: pyproject.toml... [0;32m✅ PASS[0m
+
+[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+[0;34m3. Checking Service Files[0m
+[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+  Testing Service auth structure... [0;32m✅ PASS[0m
+  Testing Service user structure... [0;32m✅ PASS[0m
+  Testing Service task structure... [0;32m✅ PASS[0m
+  Testing Service notification structure... [0;32m✅ PASS[0m
+
+[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+[0;34m4. Testing Docker Builds[0m
+[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+  Testing Building auth Docker image... #0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.46kB done
+#1 WARN: FromAsCasing: 'as' and 'FROM' keywords' casing do not match (line 6)
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python:3.12-slim
+#2 DONE 0.6s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 281B done
+#3 DONE 0.0s
+
+#4 [builder 1/5] FROM docker.io/library/python:3.12-slim@sha256:d86b4c74b936c438cd4cc3a9f7256b9a7c27ad68c7caf8c205e18d9845af0164
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 414B done
+#5 DONE 0.0s
+
+#6 [builder 4/5] COPY requirements.txt .
+#6 CACHED
+
+#7 [stage-1 4/6] COPY --from=builder /root/.local /home/appuser/.local
+#7 CACHED
+
+#8 [stage-1 2/6] RUN groupadd -r appuser && useradd -r -g appuser appuser
+#8 CACHED
+
+#9 [builder 2/5] WORKDIR /app
+#9 CACHED
+
+#10 [stage-1 3/6] WORKDIR /app
+#10 CACHED
+
+#11 [stage-1 5/6] COPY app/ ./app/
+#11 CACHED
+
+#12 [builder 3/5] RUN apt-get update &&     apt-get install -y --no-install-recommends     gcc     && rm -rf /var/lib/apt/lists/*
+#12 CACHED
+
+#13 [builder 5/5] RUN pip install --user --no-cache-dir --no-warn-script-location -r requirements.txt
+#13 CACHED
+
+#14 [stage-1 6/6] RUN chown -R appuser:appuser /app
+#14 CACHED
+
+#15 exporting to image
+#15 exporting layers done
+#15 writing image sha256:04b60bac55c041ea17b34b9cbf4f0a61e019e7295fe2ed2985ffc1d2103dc04e done
+#15 naming to docker.io/library/test-auth:test done
+#15 DONE 0.0s
+
+ [33m1 warning found (use docker --debug to expand):
+[0m - FromAsCasing: 'as' and 'FROM' keywords' casing do not match (line 6)
+[0;32m✅ PASS[0m
+  Testing Building user Docker image... #0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.46kB done
+#1 WARN: FromAsCasing: 'as' and 'FROM' keywords' casing do not match (line 6)
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python:3.12-slim
+#2 DONE 0.3s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 281B done
+#3 DONE 0.0s
+
+#4 [builder 1/5] FROM docker.io/library/python:3.12-slim@sha256:d86b4c74b936c438cd4cc3a9f7256b9a7c27ad68c7caf8c205e18d9845af0164
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 415B done
+#5 DONE 0.0s
+
+#6 [stage-1 2/6] RUN groupadd -r appuser && useradd -r -g appuser appuser
+#6 CACHED
+
+#7 [stage-1 3/6] WORKDIR /app
+#7 CACHED
+
+#8 [stage-1 4/6] COPY --from=builder /root/.local /home/appuser/.local
+#8 CACHED
+
+#9 [builder 4/5] COPY requirements.txt .
+#9 CACHED
+
+#10 [builder 2/5] WORKDIR /app
+#10 CACHED
+
+#11 [builder 3/5] RUN apt-get update &&     apt-get install -y --no-install-recommends     gcc     && rm -rf /var/lib/apt/lists/*
+#11 CACHED
+
+#12 [builder 5/5] RUN pip install --user --no-cache-dir --no-warn-script-location -r requirements.txt
+#12 CACHED
+
+#13 [stage-1 5/6] COPY app/ ./app/
+#13 CACHED
+
+#14 [stage-1 6/6] RUN chown -R appuser:appuser /app
+#14 CACHED
+
+#15 exporting to image
+#15 exporting layers done
+#15 writing image sha256:d83817ca3a5ffe9682535c79f6305a5cfe7f83adda244b3a53cf622d9352ab30 done
+#15 naming to docker.io/library/test-user:test done
+#15 DONE 0.0s
+
+ [33m1 warning found (use docker --debug to expand):
+[0m - FromAsCasing: 'as' and 'FROM' keywords' casing do not match (line 6)
+[0;32m✅ PASS[0m
+  Testing Building task Docker image... #0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.46kB done
+#1 WARN: FromAsCasing: 'as' and 'FROM' keywords' casing do not match (line 6)
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python:3.12-slim
+#2 DONE 0.3s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 281B done
+#3 DONE 0.0s
+
+#4 [builder 1/5] FROM docker.io/library/python:3.12-slim@sha256:d86b4c74b936c438cd4cc3a9f7256b9a7c27ad68c7caf8c205e18d9845af0164
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 415B done
+#5 DONE 0.0s
+
+#6 [builder 5/5] RUN pip install --user --no-cache-dir --no-warn-script-location -r requirements.txt
+#6 CACHED
+
+#7 [stage-1 3/6] WORKDIR /app
+#7 CACHED
+
+#8 [stage-1 5/6] COPY app/ ./app/
+#8 CACHED
+
+#9 [builder 2/5] WORKDIR /app
+#9 CACHED
+
+#10 [builder 4/5] COPY requirements.txt .
+#10 CACHED
+
+#11 [stage-1 2/6] RUN groupadd -r appuser && useradd -r -g appuser appuser
+#11 CACHED
+
+#12 [stage-1 4/6] COPY --from=builder /root/.local /home/appuser/.local
+#12 CACHED
+
+#13 [builder 3/5] RUN apt-get update &&     apt-get install -y --no-install-recommends     gcc     && rm -rf /var/lib/apt/lists/*
+#13 CACHED
+
+#14 [stage-1 6/6] RUN chown -R appuser:appuser /app
+#14 CACHED
+
+#15 exporting to image
+#15 exporting layers done
+#15 writing image sha256:722671bcb39f5cd155d7075d0bc14b29807ca524fc31f41bab449560cde30700 done
+#15 naming to docker.io/library/test-task:test done
+#15 DONE 0.0s
+
+ [33m1 warning found (use docker --debug to expand):
+[0m - FromAsCasing: 'as' and 'FROM' keywords' casing do not match (line 6)
+[0;32m✅ PASS[0m
+  Testing Building notification Docker image... #0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.46kB done
+#1 WARN: FromAsCasing: 'as' and 'FROM' keywords' casing do not match (line 6)
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python:3.12-slim
+#2 DONE 0.3s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 281B done
+#3 DONE 0.0s
+
+#4 [builder 1/5] FROM docker.io/library/python:3.12-slim@sha256:d86b4c74b936c438cd4cc3a9f7256b9a7c27ad68c7caf8c205e18d9845af0164
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 355B done
+#5 DONE 0.0s
+
+#6 [builder 2/5] WORKDIR /app
+#6 CACHED
+
+#7 [stage-1 2/6] RUN groupadd -r appuser && useradd -r -g appuser appuser
+#7 CACHED
+
+#8 [builder 3/5] RUN apt-get update &&     apt-get install -y --no-install-recommends     gcc     && rm -rf /var/lib/apt/lists/*
+#8 CACHED
+
+#9 [stage-1 4/6] COPY --from=builder /root/.local /home/appuser/.local
+#9 CACHED
+
+#10 [builder 4/5] COPY requirements.txt .
+#10 CACHED
+
+#11 [builder 5/5] RUN pip install --user --no-cache-dir --no-warn-script-location -r requirements.txt
+#11 CACHED
+
+#12 [stage-1 5/6] COPY app/ ./app/
+#12 CACHED
+
+#13 [stage-1 3/6] WORKDIR /app
+#13 CACHED
+
+#14 [stage-1 6/6] RUN chown -R appuser:appuser /app
+#14 CACHED
+
+#15 exporting to image
+#15 exporting layers done
+#15 writing image sha256:48e2b82216dbe4417fdd69ac8ee98852665eb2fc96ea216ad39577f045a066de 0.0s done
+#15 naming to docker.io/library/test-notification:test done
+#15 DONE 0.0s
+
+ [33m1 warning found (use docker --debug to expand):
+[0m - FromAsCasing: 'as' and 'FROM' keywords' casing do not match (line 6)
+[0;32m✅ PASS[0m
+
+[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+[0;34m5. Checking Docker Compose[0m
+[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+  Testing Docker Compose file syntax... [0;32m✅ PASS[0m
+
+[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+[0;34m6. Cleaning Up Old Services[0m
+[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+  Testing Stopping existing containers... time="2025-11-09T21:36:59+02:00" level=warning msg="/home/silver/devops-platform-broken/docker-compose.yaml: `version` is obsolete"
+service "task" depends on undefined service "postgres": invalid compose project
+time="2025-11-09T21:36:59+02:00" level=warning msg="/home/silver/devops-platform-broken/docker-compose.yaml: `version` is obsolete"
+ Container devops-platform-broken-auth-1  Stopping
+ Container devops-platform-broken-notification-1  Stopping
+ Container devops-platform-broken-notification-1  Stopped
+ Container devops-platform-broken-notification-1  Removing
+ Container devops-platform-broken-auth-1  Stopped
+ Container devops-platform-broken-auth-1  Removing
+ Container devops-platform-broken-notification-1  Removed
+ Container devops-platform-broken-task-1  Stopping
+ Container devops-platform-broken-auth-1  Removed
+ Container devops-platform-broken-task-1  Stopped
+ Container devops-platform-broken-task-1  Removing
+ Container devops-platform-broken-task-1  Removed
+ Container devops-platform-broken-user-1  Stopping
+ Container devops-platform-broken-user-1  Stopped
+ Container devops-platform-broken-user-1  Removing
+ Container devops-platform-broken-user-1  Removed
+time="2025-11-09T21:37:00+02:00" level=warning msg="/home/silver/devops-platform-broken/docker-compose.yaml: `version` is obsolete"
+Warning: No resource found to remove for project "devops-platform-broken".
+[0;32m✅ PASS[0m
+  Testing Removing old test containers... Error response from daemon: No such container: devops-auth
+Error response from daemon: No such container: devops-user
+Error response from daemon: No such container: devops-task
+Error response from daemon: No such container: devops-notification
+[0;32m✅ PASS[0m
+
+[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+[0;34m7. Starting Services[0m
+[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+  Testing Starting services with Docker Compose... time="2025-11-09T21:37:00+02:00" level=warning msg="/home/silver/devops-platform-broken/docker-compose.yaml: `version` is obsolete"
+service "task" depends on undefined service "postgres": invalid compose project
+[0;31m❌ FAIL[0m
+    Error: Failed to start services
+time="2025-11-09T21:37:00+02:00" level=warning msg="/home/silver/devops-platform-broken/docker-compose.yaml: `version` is obsolete"
+service "task" depends on undefined service "postgres": invalid compose project
+  Testing Waiting for services (20 seconds)... [0;32m✅ PASS[0m
+
+[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+[0;34m8. Checking Container Status[0m
+[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+  Testing Container devops-auth exists... [0;31m❌ FAIL[0m
+    Error: Container not found
+  Testing Container devops-auth running... [0;31m❌ FAIL[0m
+    Error: Container not running
+  Testing Container devops-user exists... [0;31m❌ FAIL[0m
+    Error: Container not found
+  Testing Container devops-user running... [0;31m❌ FAIL[0m
+    Error: Container not running
+  Testing Container devops-task exists... [0;31m❌ FAIL[0m
+    Error: Container not found
+  Testing Container devops-task running... [0;31m❌ FAIL[0m
+    Error: Container not running
+  Testing Container devops-notification exists... [0;31m❌ FAIL[0m
+    Error: Container not found
+  Testing Container devops-notification running... [0;31m❌ FAIL[0m
+    Error: Container not running
+
+[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+[0;34m9. Collecting Container Logs[0m
+[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+  Testing Collecting logs for auth... Error response from daemon: No such container: devops-auth
+[0;32m✅ PASS[0m
+  Testing Collecting logs for user... Error response from daemon: No such container: devops-user
+[0;32m✅ PASS[0m
+  Testing Collecting logs for task... Error response from daemon: No such container: devops-task
+[0;32m✅ PASS[0m
+  Testing Collecting logs for notification... Error response from daemon: No such container: devops-notification
+[0;32m✅ PASS[0m
+
+[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+[0;34m10. Testing Health Endpoints[0m
+[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+  Testing auth /health (port 8001)... [0;31m❌ FAIL[0m
+    Error: Connection refused or service not responding
+Response for auth /health: 000
+
+000
+000
+  Testing auth /healthz (port 8001)... [0;31m❌ FAIL[0m
+    Error: HTTP 000
+  Testing auth /ready (port 8001)... [0;31m❌ FAIL[0m
+    Error: HTTP 000
+  Testing user /health (port 8002)... [0;31m❌ FAIL[0m
+    Error: Connection refused or service not responding
+Response for user /health: 000
+
+000
+000
+  Testing user /healthz (port 8002)... [0;31m❌ FAIL[0m
+    Error: HTTP 000
+  Testing user /ready (port 8002)... [0;31m❌ FAIL[0m
+    Error: HTTP 000
+  Testing task /health (port 8003)... [0;31m❌ FAIL[0m
+    Error: Connection refused or service not responding
+Response for task /health: 000
+
+000
+000
+  Testing task /healthz (port 8003)... [0;31m❌ FAIL[0m
+    Error: HTTP 000
+  Testing task /ready (port 8003)... [0;31m❌ FAIL[0m
+    Error: HTTP 000
+  Testing notification /health (port 8004)... [0;31m❌ FAIL[0m
+    Error: Connection refused or service not responding
+Response for notification /health: 000
+
+000
+000
+  Testing notification /healthz (port 8004)... [0;31m❌ FAIL[0m
+    Error: HTTP 000
+  Testing notification /ready (port 8004)... [0;31m❌ FAIL[0m
+    Error: HTTP 000
+
+[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+[0;34m11. Testing Metrics Endpoints[0m
+[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+  Testing auth /metrics (port 8001)... [0;31m❌ FAIL[0m
+    Error: Metrics not found or malformed
+Metrics response for auth: ERROR
+  Testing user /metrics (port 8002)... [0;31m❌ FAIL[0m
+    Error: Metrics not found or malformed
+Metrics response for user: ERROR
+  Testing task /metrics (port 8003)... [0;31m❌ FAIL[0m
+    Error: Metrics not found or malformed
+Metrics response for task: ERROR
+  Testing notification /metrics (port 8004)... [0;31m❌ FAIL[0m
+    Error: Metrics not found or malformed
+Metrics response for notification: ERROR
+
+[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+[0;34m12. Testing API Functionality[0m
+[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+  Testing Auth: POST /auth/register... [0;31m❌ FAIL[0m
+    Error: HTTP 000
+Auth register response: 
+000
+000
+  Testing Auth: POST /auth/login... [0;31m❌ FAIL[0m
+    Error: HTTP 000
+  Testing User: POST /users... [0;31m❌ FAIL[0m
+    Error: HTTP 000
+  Testing User: GET /users... [0;31m❌ FAIL[0m
+    Error: HTTP 000
+  Testing Task: POST /tasks... [0;31m❌ FAIL[0m
+    Error: HTTP 000
+  Testing Task: GET /tasks... [0;31m❌ FAIL[0m
+    Error: HTTP 000
+  Testing Notification: POST /notifications/notify... [0;31m❌ FAIL[0m
+    Error: HTTP 000
+
+[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+[0;34m13. Final Docker Compose Status[0m
+[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+
+Docker Compose Services:
+time="2025-11-09T21:37:22+02:00" level=warning msg="/home/silver/devops-platform-broken/docker-compose.yaml: `version` is obsolete"
+NAME      IMAGE     COMMAND   SERVICE   CREATED   STATUS    PORTS
+
+All Containers:
+
+[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+[0;34m14. Collecting All Container Logs[0m
+[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+
+=== Logs for auth ===
+Error response from daemon: No such container: devops-auth
+
+=== Logs for user ===
+Error response from daemon: No such container: devops-user
+
+=== Logs for task ===
+Error response from daemon: No such container: devops-task
+
+=== Logs for notification ===
+Error response from daemon: No such container: devops-notification
+
+[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+[0;32mTest Summary[0m
+[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+
+Total Tests:  67
+[0;32mPassed:       35[0m
+[0;31mFailed:       32[0m
+Pass Rate:    52%
+
+[0;31mFailed Tests:[0m
+  - 31: Failed to start services
+  - 33: Container not found
+  - 34: Container not running
+  - 35: Container not found
+  - 36: Container not running
+  - 37: Container not found
+  - 38: Container not running
+  - 39: Container not found
+  - 40: Container not running
+  - 45: Connection refused or service not responding
+  - 46: HTTP 000
+  - 47: HTTP 000
+  - 48: Connection refused or service not responding
+  - 49: HTTP 000
+  - 50: HTTP 000
+  - 51: Connection refused or service not responding
+  - 52: HTTP 000
+  - 53: HTTP 000
+  - 54: Connection refused or service not responding
+  - 55: HTTP 000
+  - 56: HTTP 000
+  - 57: Metrics not found or malformed
+  - 58: Metrics not found or malformed
+  - 59: Metrics not found or malformed
+  - 60: Metrics not found or malformed
+  - 61: HTTP 000
+  - 62: HTTP 000
+  - 63: HTTP 000
+  - 64: HTTP 000
+  - 65: HTTP 000
+  - 66: HTTP 000
+  - 67: HTTP 000
+
+Completed: Sun Nov  9 21:37:23 IST 2025
+Log file: test-results-20251109-213655.log
+
+[1;33mServices are still running.[0m
+[1;33mTo stop: docker compose --profile dev down[0m
+
+[0;31m╔════════════════════════════════════════════╗[0m
+[0;31m║         SOME TESTS FAILED ❌                ║[0m
+[0;31m╚════════════════════════════════════════════╝[0m
+
+[1;33mPlease send the log file: test-results-20251109-213655.log[0m
+
+To view the log:
+  cat test-results-20251109-213655.log
+
+To copy log to clipboard:
+  # Linux: cat test-results-20251109-213655.log | xclip -selection clipboard
+  # Mac:   cat test-results-20251109-213655.log | pbcopy
+  # Or just: cat test-results-20251109-213655.log
