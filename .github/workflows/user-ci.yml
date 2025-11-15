@@ -15,6 +15,7 @@ jobs:
     env:
       IMAGE_NAME: silverdeath366/user
       VALUES_FILE: helm/charts/user/values.yaml
+      SERVICE_DIR: user
       WORKDIR: repo
 
     steps:
@@ -36,16 +37,16 @@ jobs:
       run: |
         cd $WORKDIR
         python3 -m pip install --upgrade pip
-        pip install -r services/user/requirements.txt
+        pip install -r services/$SERVICE_DIR/requirements.txt
         pip install pytest httpx
 
     - name: Set PYTHONPATH
-      run: echo "PYTHONPATH=${{ github.workspace }}/$WORKDIR:${{ github.workspace }}/$WORKDIR/services" >> $GITHUB_ENV
+      run: echo "PYTHONPATH=${{ github.workspace }}/$WORKDIR:${{ github.workspace }}/$WORKDIR/services/$SERVICE_DIR" >> $GITHUB_ENV
 
     - name: Run Tests
       run: |
         cd $WORKDIR
-        pytest services/user/tests
+        pytest services/$SERVICE_DIR/tests
 
     - name: Docker Login
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
@@ -53,7 +54,7 @@ jobs:
     - name: Build & Push Docker image
       run: |
         cd $WORKDIR
-        docker build -t $IMAGE_NAME:${{ steps.vars.outputs.sha_short }} services/user
+        docker build -t $IMAGE_NAME:${{ steps.vars.outputs.sha_short }} services/$SERVICE_DIR
         docker push $IMAGE_NAME:${{ steps.vars.outputs.sha_short }}
     - name: Update Helm values.yaml with SHA tag
       run: |
