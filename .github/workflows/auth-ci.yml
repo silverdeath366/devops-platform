@@ -3,13 +3,15 @@ name: CI/CD - Auth Service
 
 on:
   push:
-    paths:
-      - 'services/auth/**'
-      - '.github/workflows/auth-ci.yml'
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     env:
       IMAGE_NAME: silverdeath366/auth
       HELM_CHART_PATH: helm/charts/auth
@@ -55,3 +57,20 @@ jobs:
     - name: Update Helm values.yaml with SHA tag
       run: |
         sed -i 's|tag:.*|tag: "${{ steps.vars.outputs.sha_short }}"|' $VALUES_FILE
+    - name: Commit Helm update
+      id: commit
+      run: |
+        if git diff --quiet $VALUES_FILE; then
+          echo "changed=false" >> $GITHUB_OUTPUT
+        else
+          echo "changed=true" >> $GITHUB_OUTPUT
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add $VALUES_FILE
+          git commit -m "chore(auth): bump image tag to ${{ steps.vars.outputs.sha_short }}"
+        fi
+    - name: Push Helm update
+      if: steps.commit.outputs.changed == 'true'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: git push origin HEAD:${GITHUB_REF#refs/heads/}
