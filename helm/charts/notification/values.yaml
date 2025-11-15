@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: silverdeath366/notification
-  tag: v2
+  tag: "c9ed406"
   pullPolicy: Always
 
 service:
