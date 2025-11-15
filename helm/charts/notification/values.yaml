@@ -3,7 +3,7 @@ replicaCount: 1
 image:
   repository: silverdeath366/notification
   tag: v2
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 
 service:
   type: ClusterIP

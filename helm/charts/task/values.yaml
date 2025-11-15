@@ -2,8 +2,8 @@ replicaCount: 1
 
 image:
   repository: silverdeath366/task
-  tag: v1
-  pullPolicy: IfNotPresent
+  tag: v2
+  pullPolicy: Always
 
 service:
   type: ClusterIP
