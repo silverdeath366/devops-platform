@@ -1,0 +1,37 @@
+__pycache__/
+*.pyc
+.env
+.env.*
+venv/
+.venv/
+.idea/
+.vscode/
+*.db
+test-results-*.log
+*.sqlite
+*.sqlite3
+*.DS_Store
+dist/
+build/
+node_modules/
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+
+# Docker
+*.db
+*.env
+.env.*
+
+# OS
+.DS_Store
+
+# coverage and archives
+.coverage
+helm/**/*.zip

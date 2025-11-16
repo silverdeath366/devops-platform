@@ -1,0 +1,91 @@
+name: CI/CD - Task Service
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-actions[bot]'
+    permissions:
+      contents: write
+    env:
+      IMAGE_NAME: silverdeath366/task
+      VALUES_FILE: helm/charts/task/values.yaml
+      SERVICE_DIR: task
+      WORKDIR: repo
+
+    steps:
+    - name: Checkout repository
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        git clone https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git $WORKDIR
+        cd $WORKDIR
+        git checkout $GITHUB_REF_NAME
+
+    - name: Extract short SHA
+      id: vars
+      run: |
+        cd $WORKDIR
+        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+    - name: Install test dependencies
+      run: |
+        cd $WORKDIR
+        python3 -m pip install --upgrade pip
+        pip install -r services/$SERVICE_DIR/requirements.txt
+        pip install pytest httpx
+
+    - name: Set PYTHONPATH
+      run: echo "PYTHONPATH=${{ github.workspace }}/$WORKDIR:${{ github.workspace }}/$WORKDIR/services/$SERVICE_DIR" >> $GITHUB_ENV
+
+    - name: Run Tests
+      run: |
+        cd $WORKDIR
+        pytest services/$SERVICE_DIR/tests
+
+    - name: Docker Login
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+    - name: Build & Push Docker image
+      run: |
+        cd $WORKDIR
+        docker build -t $IMAGE_NAME:${{ steps.vars.outputs.sha_short }} services/$SERVICE_DIR
+        docker push $IMAGE_NAME:${{ steps.vars.outputs.sha_short }}
+    - name: Update Helm values.yaml with SHA tag
+      run: |
+        cd $WORKDIR
+        sed -i 's|tag:.*|tag: "${{ steps.vars.outputs.sha_short }}"|' $VALUES_FILE
+    - name: Commit Helm update
+      id: commit
+      run: |
+        cd $WORKDIR
+        if git diff --quiet $VALUES_FILE; then
+          echo "changed=false" >> $GITHUB_OUTPUT
+        else
+          echo "changed=true" >> $GITHUB_OUTPUT
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add $VALUES_FILE
+          git commit -m "chore(task): bump image tag to ${{ steps.vars.outputs.sha_short }}"
+        fi
+    - name: Push Helm update
+      if: steps.commit.outputs.changed == 'true'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        cd $WORKDIR
+        for attempt in 1 2 3; do
+          git pull --rebase origin ${GITHUB_REF#refs/heads/}
+          if git push origin HEAD:${GITHUB_REF#refs/heads/}; then
+            exit 0
+          fi
+          echo "Push attempt $attempt failed, retrying..."
+          sleep 5
+        done
+        echo "Push failed after multiple attempts" >&2
+        exit 1
